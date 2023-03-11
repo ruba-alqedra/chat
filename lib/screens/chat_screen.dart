@@ -6,7 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:googleapis_auth/auth.dart';
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:http/http.dart' as http;
 
@@ -36,14 +35,6 @@ class _ChatScreenState extends State<ChatScreen> {
     print(user.email);
   }
 
-  // void getMessages() async {
-  //   messages = await _fireStore.collection('messages').get();
-  //   setState(() {});
-  //   for (var item in messages.docs) {
-  //     print(item['text']);
-  //   }
-  // }
-
   void getNotifications() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       if (message.notification != null) {
@@ -58,7 +49,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<AccessToken> getAccessToken() async {
     final serviceAccount = await rootBundle.loadString(
-        'assets/chat-app-c6b60-firebase-adminsdk-w1x0d-87facad419.json');
+        'assets/add-fbtofluter-firebase-adminsdk-3f91h-8f50a7db7a.json');
     final data = await json.decode(serviceAccount);
     print(data);
     final accountCredentials = ServiceAccountCredentials.fromJson({
@@ -83,18 +74,23 @@ class _ChatScreenState extends State<ChatScreen> {
   void sendNotification(String title, String body) async {
     http.Response response = await http.post(
       Uri.parse(
-          'https://fcm.googleapis.com/v1/projects/chat-app-c6b60/messages:send'),
+          'https://fcm.googleapis.com/v1/projects/add-fbtofluter/messages:send'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       },
-      body: jsonEncode({
-        "message": {
-          "topic": "breaking_news",
-          // "token": fcmToken,
-          "notification": {"body": body, "title": title}
-        }
-      }),
+      body: jsonEncode(
+        {
+          "message": {
+            "topic": "break_news",
+            // "token": fcmToken,
+            "notification": {
+              "body": body,
+              "title": title,
+            }
+          }
+        },
+      ),
     );
     print('response.body: ${response.body}');
   }
@@ -269,7 +265,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         }
                       }
                     },
-                    child: Text(
+                    child: const Text(
                       'Send',
                       style: kSendButtonTextStyle,
                     ),
@@ -307,23 +303,23 @@ class MessageBubble extends StatelessWidget {
             isMe ? CrossAxisAlignment.start : CrossAxisAlignment.end,
         children: [
           Text(
-            '$sender',
-            style: TextStyle(
+            sender,
+            style: const TextStyle(
               fontSize: 14,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           Material(
             color: isMe ? Colors.blueAccent : Colors.lightBlueAccent,
             borderRadius: isMe
-                ? BorderRadius.only(
+                ? const BorderRadius.only(
                     topRight: Radius.circular(10),
                     bottomLeft: Radius.circular(10),
                     bottomRight: Radius.circular(10),
                   )
-                : BorderRadius.only(
+                : const BorderRadius.only(
                     topLeft: Radius.circular(10),
                     bottomLeft: Radius.circular(10),
                     bottomRight: Radius.circular(10),
@@ -332,7 +328,7 @@ class MessageBubble extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 '${messages[index]['text']}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 24,
                   color: Colors.white,
                 ),
